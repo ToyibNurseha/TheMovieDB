@@ -1,12 +1,14 @@
-package com.toyibnurseha.themoviedb.data.movie
+package com.toyibnurseha.themoviedb.data.response.movie
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.toyibnurseha.themoviedb.utils.Constant.MOVIE_TABLE_NAME
 import kotlinx.android.parcel.Parcelize
 
+@Entity(tableName = MOVIE_TABLE_NAME)
 @Parcelize
 data class MovieEntity(
     @SerializedName("backdrop_path")
@@ -26,5 +28,7 @@ data class MovieEntity(
     @SerializedName("vote_average")
     val voteAverage: Double? = null,
     @SerializedName("vote_count")
-    val voteCount: Int? = null
+    val voteCount: Int? = null,
+    @ColumnInfo(name = "add_watchlist")
+    var addWatchlist: Boolean = false
 ) : Parcelable

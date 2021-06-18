@@ -4,13 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.toyibnurseha.themoviedb.data.detailmovie.DetailMovieEntity
-import com.toyibnurseha.themoviedb.data.detailshow.DetailShowEntity
-import com.toyibnurseha.themoviedb.data.movie.MovieEntity
-import com.toyibnurseha.themoviedb.data.show.TVShowEntity
+import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
+import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
 import com.toyibnurseha.themoviedb.utils.Constant.DATABASE_NAME
 
-@Database(entities = [DetailMovieEntity::class, DetailShowEntity::class], version = 1)
+@Database(entities = [MovieEntity::class, TVShowEntity::class], version = 1)
 abstract class MovieDatabase : RoomDatabase() {
 
     abstract fun getFavoriteMovie() : FavoriteMovieDAO

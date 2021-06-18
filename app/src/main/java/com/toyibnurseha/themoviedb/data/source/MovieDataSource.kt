@@ -1,34 +1,26 @@
 package com.toyibnurseha.themoviedb.data.source
 
 import androidx.lifecycle.LiveData
-import com.toyibnurseha.themoviedb.data.detailmovie.DetailMovieEntity
-import com.toyibnurseha.themoviedb.data.detailshow.DetailShowEntity
-import com.toyibnurseha.themoviedb.data.movie.MovieEntity
-import com.toyibnurseha.themoviedb.data.show.TVShowEntity
+import androidx.paging.PagedList
+import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
+import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
+import com.toyibnurseha.themoviedb.utils.Resource
 
 interface MovieDataSource {
 
-    fun getPopularMovies() : LiveData<List<MovieEntity>>
+    fun getPopularMovies() : LiveData<Resource<PagedList<MovieEntity>>>
 
-    fun getMovieDetail(movieId: Int?) : LiveData<DetailMovieEntity>
+    fun getPopularShow() : LiveData<Resource<PagedList<TVShowEntity>>>
 
-    fun getPopularShow() : LiveData<List<TVShowEntity>>
+    fun setMoviesWatchlist(movies: MovieEntity, state: Boolean)
 
-    fun getShowDetail(showId: Int) : LiveData<DetailShowEntity>
+    fun setTvShowsWatchlist(tvShows: TVShowEntity, state: Boolean)
 
-    suspend fun insertFavoriteMovie(movie: DetailMovieEntity)
+    fun getMoviesWatchlist(): LiveData<PagedList<MovieEntity>>
 
-    suspend fun insertFavoriteShow(shot: DetailShowEntity)
+    fun getTvShowsWatchlist(): LiveData<PagedList<TVShowEntity>>
 
-    fun getLocalFavoriteMovie() : LiveData<List<DetailMovieEntity>>
+    fun loadMoviesDetails(moviesID: Int): LiveData<Resource<MovieEntity>>
 
-    fun getLocalFavoriteShow() : LiveData<List<DetailShowEntity>>
-
-    fun getLocalFavoriteDetailShow() : LiveData<List<DetailShowEntity>>
-
-    fun getFavoriteDetailMovie() : LiveData<List<DetailMovieEntity>>
-
-    fun getFavoriteShow() : LiveData<List<TVShowEntity>>
-
-    fun getFavoriteDetailShow() : LiveData<List<DetailShowEntity>>
+    fun loadTvShowsDetails(tvShowsID: Int): LiveData<Resource<TVShowEntity>>
 }

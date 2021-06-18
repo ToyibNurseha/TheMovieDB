@@ -1,11 +1,12 @@
-package com.toyibnurseha.themoviedb.data.show
+package com.toyibnurseha.themoviedb.data.response.show
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.toyibnurseha.themoviedb.utils.Constant.SHOW_TABLE_NAME
 
-
+@Entity(tableName = SHOW_TABLE_NAME)
 data class TVShowEntity(
     val backdrop_path: String? = null,
     @SerializedName("first_air_date")
@@ -24,5 +25,7 @@ data class TVShowEntity(
     @SerializedName("vote_average")
     val voteAverage: Double? = null,
     @SerializedName("vote_count")
-    val voteCount: Int? = null
+    val voteCount: Int? = null,
+    @ColumnInfo(name = "add_watchlist")
+    var addWatchlist: Boolean = false
 )

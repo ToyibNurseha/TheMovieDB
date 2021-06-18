@@ -1,56 +1,49 @@
 package com.toyibnurseha.themoviedb.data.source.local
 
 import androidx.lifecycle.LiveData
-import com.toyibnurseha.themoviedb.data.detailmovie.DetailMovieEntity
-import com.toyibnurseha.themoviedb.data.detailshow.DetailShowEntity
-import com.toyibnurseha.themoviedb.data.movie.MovieEntity
-import com.toyibnurseha.themoviedb.data.show.TVShowEntity
-import com.toyibnurseha.themoviedb.db.MovieDatabase
-import com.toyibnurseha.themoviedb.utils.EspressoIdlingResource
+import androidx.paging.DataSource
+import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
+import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
+import com.toyibnurseha.themoviedb.db.FavoriteMovieDAO
 
-class MovieLocalDataSource(val db: MovieDatabase) {
+class MovieLocalDataSource(private val movieDao: FavoriteMovieDAO) {
 
     companion object {
 
         @Volatile
         private var instance: MovieLocalDataSource? = null
 
-        fun getInstance(db: MovieDatabase): MovieLocalDataSource =
+        fun getInstance(dao: FavoriteMovieDAO): MovieLocalDataSource =
             instance ?: synchronized(this) {
-                MovieLocalDataSource(db).apply { instance = this }
+                MovieLocalDataSource(dao).apply { instance = this }
             }
     }
 
-    fun getFavoriteMovies(callback: LoadFavoriteMovieCallback) {
-        EspressoIdlingResource.increment()
-        db.getFavoriteMovie().getAllFavoriteMovies().let {
-            callback.responseFavoriteMovie(it)
-            EspressoIdlingResource.decrement()
-        }
+    fun getFavoriteMovies() : DataSource.Factory<Int, MovieEntity> = movieDao.getAllFavoriteMovies()
+
+    fun getFavoriteShows() : DataSource.Factory<Int, TVShowEntity> = movieDao.getAllFavoriteShow()
+
+    fun getWatchListMovie() : DataSource.Factory<Int, MovieEntity> = movieDao.getWatchListMovie()
+
+    fun getWatchListShows() : DataSource.Factory<Int, TVShowEntity> = movieDao.getWatchListShows()
+
+    fun insertMovies(movies: List<MovieEntity>) = movieDao.insertMovies(movies)
+
+    fun insertTvShows(tvShows: List<TVShowEntity>) = movieDao.insertShows(tvShows)
+
+    fun getMoviesById(moviesID: Int): LiveData<MovieEntity> = movieDao.getMoviesById(moviesID)
+
+    fun getTvShowsById(tvShowsId: Int): LiveData<TVShowEntity> = movieDao.getTvShowsById(tvShowsId)
+
+    fun updateMoviesWatchlist(movies: MovieEntity, newState: Boolean) {
+        movies.addWatchlist = newState
+        movieDao.updateMovies(movies)
     }
 
-    fun getFavoriteShow(callback: LoadFavoriteShowCallback) {
-        EspressoIdlingResource.increment()
-        db.getFavoriteMovie().getAllFavoriteShow().let {
-            callback.responsePopularShow(it)
-            EspressoIdlingResource.decrement()
-        }
+    fun updateTvShowsWatchlist(tvShows: TVShowEntity, newState: Boolean) {
+        tvShows.addWatchlist = newState
+        movieDao.updateTvShows(tvShows)
     }
 
-    interface LoadFavoriteMovieCallback {
-        fun responseFavoriteMovie(response: List<DetailMovieEntity>)
-    }
-
-    interface LoadFavoriteMovieDetailCallback {
-        fun responseFavoriteMovieDetail(response: DetailMovieEntity)
-    }
-
-    interface LoadFavoriteShowCallback {
-        fun responsePopularShow(response: List<DetailShowEntity>)
-    }
-
-    interface LoadFavoriteShowDetailCallback {
-        fun responseDetailShow(response: DetailShowEntity)
-    }
 
 }

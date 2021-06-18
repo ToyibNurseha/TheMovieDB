@@ -8,37 +8,81 @@
     android:theme="@style/Theme.TheMovieDb"
     tools:context=".ui.favorite.FavoriteFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFavoriteMovie"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/item_movie"
-        tools:itemCount="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFavoriteShow"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:listitem="@layout/item_movie"
-        tools:itemCount="2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rvFavoriteMovie"/>
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:trackColor="@color/white"
-        android:indeterminate="true"
-        app:indicatorSize="@dimen/_50sdp"
-        app:indicatorColor="@color/crimson"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:singleSelection="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/moviesChip"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/movies"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/showsChip"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/tv_show"/>
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavoriteMovie"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                tools:listitem="@layout/item_movie"
+                tools:itemCount="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/chipGroup"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavoriteShow"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                tools:listitem="@layout/item_movie"
+                tools:itemCount="2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rvFavoriteMovie"/>
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:trackColor="@color/white"
+                android:indeterminate="true"
+                app:indicatorSize="@dimen/_50sdp"
+                app:indicatorColor="@color/crimson"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

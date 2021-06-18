@@ -1,4 +1,4 @@
-package com.toyibnurseha.themoviedb.data.movie
+package com.toyibnurseha.themoviedb.data.response.movie
 
 data class MovieResponse(
     val page: Int,

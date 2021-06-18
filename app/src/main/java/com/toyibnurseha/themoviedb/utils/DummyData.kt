@@ -1,7 +1,7 @@
 package com.toyibnurseha.themoviedb.utils
 
-import com.toyibnurseha.themoviedb.data.movie.MovieEntity
-import com.toyibnurseha.themoviedb.data.show.TVShowEntity
+import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
+import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
 
 object DummyData {
 
@@ -10,7 +10,7 @@ object DummyData {
 
         movies.add(
             MovieEntity(
-                "/5tZkPgnRIT0sRYzMDyzYZx5ZFrZ.jpg\"",
+                "/8ChCpCYxh9YXusmHwcE9YzP0TSG.jpg",
                 337404,
                 "Cruella",
                 "In 1970s London amidst the punk rock revolution, a young grifter named Estella is determined to make a name for herself with her designs. She befriends a pair of young thieves who appreciate her appetite for mischief, and together they are able to build a life for themselves on the London streets. One day, Estella’s flair for fashion catches the eye of the Baroness von Hellman, a fashion legend who is devastatingly chic and terrifyingly haute. But their relationship sets in motion a course of events and revelations that will cause Estella to embrace her wicked side and become the raucous, fashionable and revenge-bent Cruella.",
@@ -18,7 +18,7 @@ object DummyData {
                 "/hjS9mH8KvRiGHgjk6VUZH7OT0Ng.jpg",
                 "2021-05-26",
                 "Cruella",
-                voteAverage = 8.8
+                voteAverage = 8.6
             )
         )
 
@@ -82,14 +82,14 @@ object DummyData {
 
         show.add(
             TVShowEntity(
-                "/h48Dpb7ljv8WQvVdyFWVLz64h4G.jpg",
-                "2016-01-25",
-                63174,
-                "Lucifer",
-                overview = "Bored and unhappy as the Lord of Hell, Lucifer Morningstar abandoned his throne and retired to Los Angeles, where he has teamed up with LAPD detective Chloe Decker to take down criminals. But the longer he's away from the underworld, the greater the threat that the worst of humanity could escape.",
+                "/edmk8xjGBsYVIf4QtLY9WMaMcXZ.jpg",
+                "2005-03-27",
+                1416,
+                "Grey's Anatomy",
+                overview = "Follows the personal and professional lives of a group of doctors at Seattle’s Grey Sloan Memorial Hospital.",
                 popularity = 1984.268,
-                posterPath = "/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg",
-                voteAverage = 8.5
+                posterPath = "/clnyhPqj1SNgpAdeSS6a6fwE6Bo.jpg",
+                voteAverage = 8.2
             )
         )
 

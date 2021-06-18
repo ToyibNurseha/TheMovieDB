@@ -1,4 +1,4 @@
-package com.toyibnurseha.themoviedb
+package com.toyibnurseha.themoviedb.ui.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

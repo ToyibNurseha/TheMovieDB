@@ -41,16 +41,6 @@
         app:layout_constraintTop_toBottomOf="@id/ivThumbnail"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/btnFavorite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:srcCompat="@drawable/ic_favorite_border"
-        app:layout_constraintTop_toBottomOf="@id/ivThumbnail"
-        app:layout_constraintEnd_toStartOf="@id/btnShare"/>
-
     <TextView
         android:id="@+id/tvRateDetail"
         android:layout_width="wrap_content"
@@ -92,15 +82,15 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnWatchTrailer"
+        android:id="@+id/btnAddWatchList"
         android:layout_width="0dp"
         android:layout_height="52dp"
         android:layout_marginStart="42dp"
         android:layout_marginEnd="42dp"
         android:layout_marginTop="24dp"
         app:backgroundTint="@color/crimson"
-        android:text="@string/watch_trailer"
-        app:icon="@drawable/ic_circle_play"
+        android:text="@string/add_to_watch_list"
+        app:icon="@drawable/ic_favorite_border"
         app:iconGravity="textStart"
         app:cornerRadius="10dp"
         app:layout_constraintTop_toBottomOf="@id/tvDescriptionDetail"

@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">TheMovieDb</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="movies">Movies</string>
     <string name="tv_show">Tv Shows</string>
     <string name="watch_list">Watch List</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply dummy text of the printing and typesetting industry</string>
-    <string name="watch_trailer">Watch Trailer</string>
     <string name="release_date">Release date</string>
     <string name="share_text">Watch %1$s  \n %2$s \n with release date %3$s</string>
     <string name="_79">79%</string>
     <string name="title">Title</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_to_watch_list">Add To Watch List</string>
+    <string name="added_to_watch_list">Added To Watch List</string>
+    <string name="remove_from_watch_list">Remove From Watch List</string>
+    <string name="deleted_from_watch_list">Deleted From Watch List</string>
 </resources>

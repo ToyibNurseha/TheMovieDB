@@ -1,25 +1,29 @@
 package com.toyibnurseha.themoviedb.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify
-import com.toyibnurseha.themoviedb.data.detailmovie.DetailMovieEntity
-import com.toyibnurseha.themoviedb.data.detailshow.DetailShowEntity
+import com.toyibnurseha.themoviedb.data.response.movie.DetailMovieEntity
+import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
+import com.toyibnurseha.themoviedb.data.response.show.DetailShowEntity
+import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
+import com.toyibnurseha.themoviedb.data.source.local.MovieLocalDataSource
 import com.toyibnurseha.themoviedb.data.source.remote.MovieRemoteDataSource
-import com.toyibnurseha.themoviedb.utils.DummyData
-import com.toyibnurseha.themoviedb.utils.LiveDataTestUtil
+import com.toyibnurseha.themoviedb.utils.*
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.mockito.junit.MockitoJUnitRunner
 
 class MovieRepositoryTest {
 
@@ -27,94 +31,64 @@ class MovieRepositoryTest {
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val remote = Mockito.mock(MovieRemoteDataSource::class.java)
-    private val movieRepo = FakeMovieRepository(remote)
+    private val local = Mockito.mock(MovieLocalDataSource::class.java)
+    private val appExecutors = Mockito.mock(AppExecutors::class.java)
+    private val movieRepo = FakeMovieRepository(remote, local, appExecutors)
 
     private val movieList = DummyData.generateMovieData()
     private val movieId = movieList.first().id
-    private var dumMovie = DetailMovieEntity(
-        backdropPath = movieList.first().backdropPath,
-        id = movieList.first().id,
-        originalTitle = movieList.first().originalTitle,
-        voteCount = movieList.first().voteCount,
-        voteAverage = movieList.first().voteAverage,
-        posterPath = movieList.first().posterPath,
-        releaseDate = movieList.first().releaseDate
-    )
+    private val movieDummy = movieList.first()
 
     private val showList = DummyData.generateShowsData()
     private val showId = showList.first().id
-    private var dumShow = DetailShowEntity(
-        backdropPath = showList.first().backdrop_path,
-        id = showList.first().id,
-        name = showList.first().name,
-        voteCount = showList.first().voteCount,
-        voteAverage = showList.first().voteAverage,
-        posterPath = showList.first().posterPath,
-        firstAirDate = showList.first().firstAirDate
-    )
+    private val showDummy = showList.first()
 
     @Test
     fun getMovies(){
-        val coroutine = CoroutineScope(Dispatchers.IO)
-        coroutine.launch {
-            doAnswer { invocation ->
-                (invocation.arguments[0] as MovieRemoteDataSource.LoadPopularMovieCallback).responsePopularMovie(movieList)
-                null
-            }.`when`(remote).getPopularMovies(any())
-            val movieEntity = LiveDataTestUtil.getValue(movieRepo.getPopularMovies())
-            verify(remote).getPopularMovies(any())
-            assertNotNull(movieEntity)
-            assertEquals(movieList.size.toLong(), movieList.size.toLong())
-        }
+        val dataSourceFactory = Mockito.mock(DataSource.Factory::class.java) as DataSource.Factory<Int, MovieEntity>
+        Mockito.`when`(local.getFavoriteMovies()).thenReturn(dataSourceFactory)
+        movieRepo.getPopularMovies()
+
+        val movieEntities = Resource.success(PagedListUtil.mockPagedList(DummyData.generateMovieData()))
+        verify(local).getFavoriteMovies()
+        Assert.assertNotNull(movieEntities.data)
+        assertEquals(movieList.size.toLong(), movieEntities.data?.size?.toLong())
     }
 
     @Test
     fun getMovieDetail(){
-        CoroutineScope(Dispatchers.IO).launch {
-            movieId?.let {
-                doAnswer { invocation ->
-                    (invocation.arguments[1] as MovieRemoteDataSource.LoadMovieDetailCallback).responseMovieDetail(dumMovie)
-                    null
-                }.`when`(remote).getMovieDetail(eq(it), any())
+        val dummyEntity = MutableLiveData<MovieEntity>()
+        dummyEntity.value = DummyData.generateMovieData().first()
+        Mockito.`when`(local.getMoviesById(movieId!!)).thenReturn(dummyEntity)
 
-                val movieEntity = LiveDataTestUtil.getValue(movieRepo.getMovieDetail(it))
-                verify(remote).getMovieDetail(it, any())
-                assertNotNull(movieEntity)
-                assertEquals(movieEntity.title, movieEntity.title)
-            }
-        }
+        val movieEntity = LiveDataTestUtil.getValue(movieRepo.loadMoviesDetails(movieId))
+        verify(local).getMoviesById(movieId)
+        Assert.assertNotNull(movieEntity.data)
+        assertEquals(movieDummy.title, movieEntity.data!!.title)
     }
 
     @Test
     fun getPopularShow(){
-        val coroutine = CoroutineScope(Dispatchers.IO)
-        coroutine.launch {
-            doAnswer { invocation ->
-                (invocation.arguments[0] as MovieRemoteDataSource.LoadShowCallback).responsePopularShow(showList)
-                null
-            }.`when`(remote).getPopularShows(any())
-            val showEntity = LiveDataTestUtil.getValue(movieRepo.getPopularShow())
-            verify(remote).getPopularShows(any())
-            assertNotNull(showEntity)
-            assertEquals(showList.size.toLong(), showList.size.toLong())
-        }
+        val dataSourceFactory = Mockito.mock(DataSource.Factory::class.java) as DataSource.Factory<Int, TVShowEntity>
+        Mockito.`when`(local.getFavoriteShows()).thenReturn(dataSourceFactory)
+        movieRepo.getPopularShow()
+
+        val showEntity = Resource.success(PagedListUtil.mockPagedList(DummyData.generateShowsData()))
+        verify(local).getFavoriteShows()
+        Assert.assertNotNull(showEntity.data)
+        assertEquals(showList.size.toLong(), showEntity.data?.size?.toLong())
     }
 
     @Test
     fun getShowDetail(){
-        CoroutineScope(Dispatchers.IO).launch {
-            showId?.let {
-                doAnswer { invocation ->
-                    (invocation.arguments[1] as MovieRemoteDataSource.LoadShowDetailCallback).responseDetailShow(dumShow)
-                    null
-                }.`when`(remote).getShowDetail(eq(it), any())
+        val dummyEntity = MutableLiveData<TVShowEntity>()
+        dummyEntity.value = DummyData.generateShowsData().first()
+        Mockito.`when`(local.getTvShowsById(showId!!)).thenReturn(dummyEntity)
 
-                val showEntity = LiveDataTestUtil.getValue(movieRepo.getShowDetail(it))
-                verify(remote).getShowDetail(it, any())
-                assertNotNull(showEntity)
-                assertEquals(showEntity.name, showEntity.name)
-            }
-        }
+        val movieEntity = LiveDataTestUtil.getValue(movieRepo.loadTvShowsDetails(showId))
+        verify(local).getTvShowsById(showId)
+        Assert.assertNotNull(movieEntity.data)
+        assertEquals(showDummy.name, movieEntity.data!!.name)
     }
 
 }

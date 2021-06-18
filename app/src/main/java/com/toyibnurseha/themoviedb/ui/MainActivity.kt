@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.toyibnurseha.themoviedb.R
-import com.toyibnurseha.themoviedb.TabPagerAdapter
 import com.toyibnurseha.themoviedb.databinding.ActivityMainBinding
+import com.toyibnurseha.themoviedb.ui.adapter.TabPagerAdapter
 
 class MainActivity : AppCompatActivity() {
 

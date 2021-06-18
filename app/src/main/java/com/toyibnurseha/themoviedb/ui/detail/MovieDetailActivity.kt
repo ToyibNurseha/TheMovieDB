@@ -1,32 +1,27 @@
 package com.toyibnurseha.themoviedb.ui.detail
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.toyibnurseha.themoviedb.R
-import com.toyibnurseha.themoviedb.data.detailmovie.DetailMovieEntity
-import com.toyibnurseha.themoviedb.data.detailshow.DetailShowEntity
+import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
+import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
 import com.toyibnurseha.themoviedb.databinding.ActivityMovieDetailBinding
 import com.toyibnurseha.themoviedb.utils.Constant.IMAGE_PATH
+import com.toyibnurseha.themoviedb.utils.Status
 import com.toyibnurseha.themoviedb.viewmodel.ViewModelProviderFactory
-import kotlinx.android.synthetic.main.item_movie.*
 
 class MovieDetailActivity : AppCompatActivity() {
 
     companion object {
         const val MOVIE_EXTRA_ID = "movie_id"
         const val MOVIE_EXTRA_TYPE = "movie_type"
-        const val MOVIE_DATA = "movie_data"
         const val MOVIE_TYPE_SHOW = "show"
         const val MOVIE_TYPE_MOVIE = "movie"
-        const val MOVIE_TYPE_DETAIL_SHOW = "detail_show"
-        const val MOVIE_TYPE_DETAIL_MOVIE = "detail_movie"
     }
 
     private lateinit var binding: ActivityMovieDetailBinding
@@ -49,129 +44,54 @@ class MovieDetailActivity : AppCompatActivity() {
         movieId = intent.getIntExtra(MOVIE_EXTRA_ID, 0)
 
         when (intent.getStringExtra(MOVIE_EXTRA_TYPE)) {
-            MOVIE_TYPE_MOVIE -> setupMovieData()
-            MOVIE_TYPE_SHOW -> setupShowData()
-            MOVIE_TYPE_DETAIL_MOVIE -> setupDetailMovieData()
-            MOVIE_TYPE_DETAIL_SHOW -> setupDetailShowData()
+            MOVIE_TYPE_MOVIE -> getMoviesData(movieId!!)
+            MOVIE_TYPE_SHOW -> getShowData(movieId!!)
         }
 
     }
 
-    private fun setupDetailShowData() {
-        val showData = intent.getParcelableExtra<DetailShowEntity>(MOVIE_DATA)
-        binding.apply {
-            tvTitleDetail.text = showData?.name
-            tvDescriptionDetail.text = showData?.overview
-            tvRateDetail.text = showData?.voteAverage.toString()
-            tvReleaseDateDetail.text = showData?.firstAirDate
-            val backdrop = IMAGE_PATH + showData?.backdropPath
-            Glide.with(this@MovieDetailActivity).load(backdrop)
-                .into(binding.ivThumbnail)
-        }
-
-        binding.btnWatchTrailer.setOnClickListener {
-            if (showData!!.video) {
-                Toast.makeText(
-                    this,
-                    "Video not available from our database",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        binding.btnShare.setOnClickListener {
-            movieId?.let {
-                val shareData = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        resources.getString(
-                            R.string.share_text,
-                            showData?.name,
-                            showData?.overview,
-                            showData?.firstAirDate
-                        )
-                    )
-                    type = "text/plain"
+    private fun getShowData(movieId: Int) {
+        viewModel.setShowData(movieId).observe(this, { movie ->
+            when (movie.status) {
+                Status.LOADING -> {
+                    showLoading(true)
                 }
-                val shareIntent = Intent.createChooser(shareData, null)
-                startActivity(shareIntent)
-            }
-        }
-    }
-
-    private fun setupDetailMovieData() {
-        val movieData = intent.getParcelableExtra<DetailMovieEntity>(MOVIE_DATA)
-        binding.apply {
-            tvTitleDetail.text = movieData?.title
-            tvDescriptionDetail.text = movieData?.overview
-            tvRateDetail.text = movieData?.voteAverage.toString()
-            tvReleaseDateDetail.text = movieData?.releaseDate
-            val backdrop = IMAGE_PATH + movieData?.backdropPath
-            Glide.with(this@MovieDetailActivity).load(backdrop)
-                .into(binding.ivThumbnail)
-        }
-
-        binding.btnWatchTrailer.setOnClickListener {
-            if (movieData!!.video) {
-                Toast.makeText(
-                    this,
-                    "Video not available from our database",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        binding.btnShare.setOnClickListener {
-            movieId?.let {
-                val shareData = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        resources.getString(
-                            R.string.share_text,
-                            movieData?.title,
-                            movieData?.overview,
-                            movieData?.releaseDate
-                        )
-                    )
-                    type = "text/plain"
+                Status.SUCCESS -> {
+                    if (movie.data != null) {
+                        showLoading(false)
+                        initShowDetail(movie.data)
+                    }
                 }
-                val shareIntent = Intent.createChooser(shareData, null)
-                startActivity(shareIntent)
-            }
-        }
-    }
-
-    private fun setupShowData() {
-        movieId?.let {
-            viewModel.getDetailShow(it).observe(this, { res ->
-                showLoading(false)
-                initShowDetail(res)
-                binding.btnFavorite.setOnClickListener {
-                    viewModel.insertFavoriteShow(res)
-                    Snackbar.make(binding.root, "inserted", Snackbar.LENGTH_SHORT).show()
+                Status.ERROR -> {
+                    showLoading(false)
+                    Toast.makeText(applicationContext, "Gagal memuat data", Toast.LENGTH_SHORT)
+                        .show()
                 }
-            })
-        }
+            }
+        })
     }
 
-    private fun initShowDetail(detailShowEntity: DetailShowEntity) {
-        binding.tvTitleDetail.text = detailShowEntity.name
-        binding.tvDescriptionDetail.text = detailShowEntity.overview
-        binding.tvRateDetail.text = detailShowEntity.voteAverage.toString()
-        binding.tvReleaseDateDetail.text = detailShowEntity.firstAirDate
-        val backdrop = IMAGE_PATH + detailShowEntity.backdropPath
+    private fun initShowDetail(data: TVShowEntity) {
+        binding.tvTitleDetail.text = data.name
+        binding.tvDescriptionDetail.text = data.overview
+        binding.tvRateDetail.text = data.voteAverage.toString()
+        binding.tvReleaseDateDetail.text = data.firstAirDate.toString()
+        val backdrop = IMAGE_PATH + data.backdrop_path
         Glide.with(this@MovieDetailActivity).load(backdrop)
             .into(binding.ivThumbnail)
 
-        binding.btnWatchTrailer.setOnClickListener {
-            if (!detailShowEntity.video) {
-                Toast.makeText(
-                    this,
-                    "Video not available from our database",
-                    Toast.LENGTH_SHORT
-                ).show()
+        if (data.addWatchlist) {
+            binding.btnAddWatchList.text = resources.getString(R.string.remove_from_watch_list)
+        } else {
+            binding.btnAddWatchList.text = resources.getString(R.string.add_to_watch_list)
+        }
+
+        binding.btnAddWatchList.setOnClickListener {
+            viewModel.insertFavoriteShow(data)
+            if (data.addWatchlist) {
+                Toast.makeText(this, resources.getString(R.string.deleted_from_watch_list), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, resources.getString(R.string.added_to_watch_list), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -183,9 +103,9 @@ class MovieDetailActivity : AppCompatActivity() {
                         Intent.EXTRA_TEXT,
                         resources.getString(
                             R.string.share_text,
-                            detailShowEntity.name,
-                            detailShowEntity.overview,
-                            detailShowEntity.firstAirDate
+                            data.name,
+                            data.overview,
+                            data.firstAirDate
                         )
                     )
                     type = "text/plain"
@@ -196,20 +116,28 @@ class MovieDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupMovieData() {
-        movieId?.let {
-            viewModel.getDetailMovie(it).observe(this, { res ->
-                showLoading(false)
-                initMovieDetail(res)
-                binding.btnFavorite.setOnClickListener {
-                    viewModel.insertFavoriteMovie(res)
-                    Snackbar.make(binding.root, "inserted", Snackbar.LENGTH_SHORT).show()
+    private fun getMoviesData(id: Int) {
+        viewModel.setMoviesData(id).observe(this, { movie ->
+            when (movie.status) {
+                Status.LOADING -> {
+                    showLoading(true)
                 }
-            })
-        }
+                Status.SUCCESS -> {
+                    if (movie.data != null) {
+                        showLoading(false)
+                        initMovieDetail(movie.data)
+                    }
+                }
+                Status.ERROR -> {
+                    showLoading(false)
+                    Toast.makeText(applicationContext, "Gagal memuat data", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        })
     }
 
-    private fun initMovieDetail(movieEntity: DetailMovieEntity) {
+    private fun initMovieDetail(movieEntity: MovieEntity) {
         binding.tvTitleDetail.text = movieEntity.title
         binding.tvDescriptionDetail.text = movieEntity.overview
         binding.tvRateDetail.text = movieEntity.voteAverage.toString()
@@ -218,13 +146,18 @@ class MovieDetailActivity : AppCompatActivity() {
         Glide.with(this@MovieDetailActivity).load(backdrop)
             .into(binding.ivThumbnail)
 
-        binding.btnWatchTrailer.setOnClickListener {
-            if (!movieEntity.video) {
-                Toast.makeText(
-                    this,
-                    "Video not available from our database",
-                    Toast.LENGTH_SHORT
-                ).show()
+        if (movieEntity.addWatchlist) {
+            binding.btnAddWatchList.text = resources.getString(R.string.remove_from_watch_list)
+        } else {
+            binding.btnAddWatchList.text = resources.getString(R.string.add_to_watch_list)
+        }
+
+        binding.btnAddWatchList.setOnClickListener {
+            viewModel.insertFavoriteMovie(movieEntity)
+            if (movieEntity.addWatchlist) {
+                binding.btnAddWatchList.text = resources.getString(R.string.remove_from_watch_list)
+            } else {
+                binding.btnAddWatchList.text = resources.getString(R.string.add_to_watch_list)
             }
         }
 
