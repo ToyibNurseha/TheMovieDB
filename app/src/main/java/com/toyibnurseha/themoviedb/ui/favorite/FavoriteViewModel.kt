@@ -12,4 +12,8 @@ class FavoriteViewModel(private val repo: MovieRepository) : ViewModel() {
     fun getMoviesWatchlist(): LiveData<PagedList<MovieEntity>> = repo.getMoviesWatchlist()
 
     fun getTvShowsWatchlist(): LiveData<PagedList<TVShowEntity>> = repo.getTvShowsWatchlist()
+
+    fun getEmptyShowWatchList() = arrayListOf<TVShowEntity>()
+
+    fun getEmptyMovieWatchList() = arrayListOf<MovieEntity>()
 }

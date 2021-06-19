@@ -56,6 +56,18 @@ class MovieRepositoryTest {
     }
 
     @Test
+    fun getMoviesWatchList(){
+        val dataSourceFactory = Mockito.mock(DataSource.Factory::class.java) as DataSource.Factory<Int, MovieEntity>
+        Mockito.`when`(local.getWatchListMovie()).thenReturn(dataSourceFactory)
+        movieRepo.getMoviesWatchlist()
+
+        val movieEntities = Resource.success(PagedListUtil.mockPagedList(DummyData.generateMovieData()))
+        verify(local).getWatchListMovie()
+        Assert.assertNotNull(movieEntities.data)
+        assertEquals(movieList.size.toLong(), movieEntities.data?.size?.toLong())
+    }
+
+    @Test
     fun getMovieDetail(){
         val dummyEntity = MutableLiveData<MovieEntity>()
         dummyEntity.value = DummyData.generateMovieData().first()
@@ -75,6 +87,18 @@ class MovieRepositoryTest {
 
         val showEntity = Resource.success(PagedListUtil.mockPagedList(DummyData.generateShowsData()))
         verify(local).getFavoriteShows()
+        Assert.assertNotNull(showEntity.data)
+        assertEquals(showList.size.toLong(), showEntity.data?.size?.toLong())
+    }
+
+    @Test
+    fun getPopularShowWatchList(){
+        val dataSourceFactory = Mockito.mock(DataSource.Factory::class.java) as DataSource.Factory<Int, TVShowEntity>
+        Mockito.`when`(local.getWatchListShows()).thenReturn(dataSourceFactory)
+        movieRepo.getTvShowsWatchlist()
+
+        val showEntity = Resource.success(PagedListUtil.mockPagedList(DummyData.generateShowsData()))
+        verify(local).getWatchListShows()
         Assert.assertNotNull(showEntity.data)
         assertEquals(showList.size.toLong(), showEntity.data?.size?.toLong())
     }
