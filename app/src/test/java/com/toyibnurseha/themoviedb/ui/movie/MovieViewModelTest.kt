@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.paging.PositionalDataSource
+import com.nhaarman.mockitokotlin2.verify
 import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
 import com.toyibnurseha.themoviedb.repository.MovieRepository
 import com.toyibnurseha.themoviedb.utils.DummyData
@@ -50,7 +51,7 @@ class MovieViewModelTest {
 
         viewModel.getMovies().observeForever(observer)
         Mockito.verify(observer).onChanged(expected.value)
-
+        verify(movieRepo).getPopularMovies()
         val expectedValue = expected.value
         val actualValue = viewModel.getMovies().value
         assertEquals(expectedValue, actualValue)

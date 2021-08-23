@@ -2,6 +2,7 @@ package com.toyibnurseha.themoviedb.ui.detail
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
+import com.nhaarman.mockitokotlin2.verify
 import com.toyibnurseha.themoviedb.data.response.movie.MovieEntity
 import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
 import com.toyibnurseha.themoviedb.repository.MovieRepository
@@ -34,7 +35,6 @@ class MovieDetailViewModelTest {
     @Before
     fun setupTest() {
         viewModel = MovieDetailViewModel(movieRepo)
-        viewModel.setMoviesData(dummyMovie.id!!)
     }
 
     @Test
@@ -44,7 +44,8 @@ class MovieDetailViewModelTest {
 
         `when`(movieRepo.loadMoviesDetails(movieId!!)).thenReturn(expected)
 
-        viewModel.setMoviesData(movieId)
+        viewModel.setMoviesData(dummyMovie.id!!)
+        verify(movieRepo).loadMoviesDetails(movieId)
 
         val expectedValue = expected.value
         val actualValue = viewModel.setMoviesData(movieId).value
@@ -60,7 +61,7 @@ class MovieDetailViewModelTest {
         `when`(movieRepo.loadTvShowsDetails(showId!!)).thenReturn(expected)
 
         viewModel.setShowData(showId)
-
+        verify(movieRepo).loadTvShowsDetails(showId)
         val expectedValue = expected.value
         val actualValue = viewModel.setShowData(showId).value
 

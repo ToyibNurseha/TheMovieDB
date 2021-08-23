@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.paging.PositionalDataSource
+import com.nhaarman.mockitokotlin2.verify
 import com.toyibnurseha.themoviedb.data.response.show.TVShowEntity
 import com.toyibnurseha.themoviedb.repository.MovieRepository
 import com.toyibnurseha.themoviedb.utils.DummyData
@@ -49,7 +50,7 @@ class ShowViewModelTest {
 
         viewModel.getPopularShow().observeForever(observer)
         Mockito.verify(observer).onChanged(expected.value)
-
+        verify(movieRepo).getPopularShow()
         val expectedValue = expected.value
         val actualValue = viewModel.getPopularShow().value
         assertEquals(expectedValue, actualValue)

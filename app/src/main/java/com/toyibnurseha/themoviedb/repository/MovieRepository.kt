@@ -36,8 +36,9 @@ class MovieRepository private constructor(
             }
     }
 
-    override fun getPopularMovies():  LiveData<Resource<PagedList<MovieEntity>>> {
-        return object : NetworkBoundResource<PagedList<MovieEntity>, List<MovieEntity>>(appExecutors) {
+    override fun getPopularMovies(): LiveData<Resource<PagedList<MovieEntity>>> {
+        return object :
+            NetworkBoundResource<PagedList<MovieEntity>, List<MovieEntity>>(appExecutors) {
             override fun shouldFetch(data: PagedList<MovieEntity>?): Boolean {
                 return data == null || data.isEmpty()
             }
@@ -49,7 +50,10 @@ class MovieRepository private constructor(
                     .setPageSize(4)
                     .build()
 
-                return LivePagedListBuilder(localRemoteDataSource.getFavoriteMovies(), config).build()
+                return LivePagedListBuilder(
+                    localRemoteDataSource.getFavoriteMovies(),
+                    config
+                ).build()
             }
 
             override fun createCall(): LiveData<APIResponse<List<MovieEntity>>> {
@@ -62,7 +66,7 @@ class MovieRepository private constructor(
                 for (moviesData in data) {
                     moviesData.apply {
                         MovieEntity(
-                            id = id ,
+                            id = id,
                             backdropPath = backdropPath,
                             posterPath = posterPath,
                             title = title,
@@ -82,9 +86,10 @@ class MovieRepository private constructor(
     }
 
     override fun getPopularShow(): LiveData<Resource<PagedList<TVShowEntity>>> {
-        return object : NetworkBoundResource<PagedList<TVShowEntity>, List<TVShowEntity>>(appExecutors) {
+        return object :
+            NetworkBoundResource<PagedList<TVShowEntity>, List<TVShowEntity>>(appExecutors) {
             override fun shouldFetch(data: PagedList<TVShowEntity>?): Boolean {
-                return data ==null || data.isEmpty()
+                return data == null || data.isEmpty()
             }
 
             override fun loadFromDB(): LiveData<PagedList<TVShowEntity>> {
@@ -94,7 +99,10 @@ class MovieRepository private constructor(
                     .setPageSize(2)
                     .build()
 
-                return LivePagedListBuilder(localRemoteDataSource.getFavoriteShows(), config).build()
+                return LivePagedListBuilder(
+                    localRemoteDataSource.getFavoriteShows(),
+                    config
+                ).build()
             }
 
             override fun createCall(): LiveData<APIResponse<List<TVShowEntity>>> {
@@ -107,7 +115,7 @@ class MovieRepository private constructor(
                 for (showsData in data) {
                     showsData.apply {
                         TVShowEntity(
-                            id = id ,
+                            id = id,
                             backdrop_path = backdrop_path,
                             posterPath = posterPath,
                             name = name,
@@ -191,6 +199,7 @@ class MovieRepository private constructor(
             }
         }.asLiveData()
     }
+
 
     override fun loadTvShowsDetails(tvShowsID: Int): LiveData<Resource<TVShowEntity>> {
         return object : NetworkBoundResource<TVShowEntity, DetailShowEntity>(appExecutors) {
